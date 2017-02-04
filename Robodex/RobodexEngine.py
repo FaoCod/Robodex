@@ -177,6 +177,7 @@ class Robodex(tk.Frame):
         for thing in inf:
             self.profile.append(p)
             p += 1
+            
         self.indexed = 0
         
         self.create_robot_info()
@@ -210,7 +211,13 @@ class Robodex(tk.Frame):
         self.key_index += 1
 
     def profile_change(self, value):
-        self.change_text(self.profile[self.indexed + value])
+        self.indexed += value #Fixed issue with not indexing to multiple data displays
+        if self.indexed > len(self.profile) - 1:
+            self.indexed = 0
+        if self.indexed < 0:
+            self.indexed = len(self.profile) - 1
+        print(self.indexed)
+        self.change_text(self.profile[self.indexed])
         
     def search(self, key, wanted):
         self.search_button['text'] = "Searching..."
@@ -220,16 +227,15 @@ class Robodex(tk.Frame):
             if wanted in inf[i][key]:
                 found = True
                 result.append(i)
-            else:
-                if not found:
-                    found = False
+
         if found:
             self.search_button['text'] = "Found!"
-            self.profile = result
-            self.change_text(self.profile[0])
+            self.profile = result #Asign profile list to result
+            print(self.profile)
+            self.change_text(self.profile[0]) #Sets the text on screen to first item in profile list
         else:
             self.search_button['text'] = "Nothing Found"
-                
+            
     def change_text(self, index):
         '''Rewrites the labels & textboxes to hold information about searched team'''
         robot.name = inf[index]['Name']
