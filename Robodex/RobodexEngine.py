@@ -3,8 +3,9 @@ from PIL import ImageTk
 from PIL import Image
 from ScrollFrame import VerticalScrolledFrame
 import csv
+from Bar import DisplayBar
 
-default_logo = 'ravenlogo.gif'
+default_logo = 'first_logo.jpg'
 default_image = 'kachow.gif'
 
 ''' Reads and creates the list of dictionaries of the teams info '''
@@ -14,18 +15,22 @@ with open('CSVTest.csv') as csvfile:
     for row in reader:
         file = {'Team':row['Team'], 'Name':row['Name'], 'Drive':row['Drive'],
                 'Chassis':row['Chassis'], 'Mechs':row['Mechs'], 'MechD':row['MechD'],
+                'aGear':row['aGear'], 'aGearPos':row['aGearPos'], 'aPosStart':row['aPosStart'],
+                'aPosEnd':row['aPosEnd'], 'gPerRound':row['gPerRound'],
+                'fPerRound':row['fPerRound'], 'climb':row['climb'],
                 'Image':row['Image'], 'Logo':row['Logo']}
         inf.append(file)
     for rob in inf:
         rob['Mechs'] = rob['Mechs'].split(',')
         rob['MechD'] = rob['MechD'].split(',')
+        rob['fPerRound'] = rob['fPerRound'].split(',')
 
 class Robot():
     ''' Creates a data class meant to house the displayed infomation '''
-    def __init__(self, name="Wall-E", team="Pixar", drive="Tank Treds", chassy="Rustic Box",
-                 image=default_image, logo=default_logo, mechs=["Limbs","Storage"],
-                 mechD=["Two hook arms that can pick up trash.",
-                        "Can consume trash and can form trash blocks inside it."]):
+    def __init__(self, name="Robodex", team="First", drive="Python3.6", chassy="tkinter library using the pack module",
+                 image=default_image, logo=default_logo, mechs=["Key Searcher", "Indexer"],
+                 mechD=["Button in top left will cycle through available keys to be used in search.",
+                        "Arrow buttons in top right will cycle through the robots that satisfy search parameter."]):
         self.name = name
         self.team = team
         self.drive = drive
@@ -126,7 +131,7 @@ class Robodex(tk.Frame):
         
         self.image_frame = tk.Frame(self.leftFrame)
         self.image_frame.pack(anchor=tk.E, padx=(10, 25), pady=10)
-        self.logo_image = tk.PhotoImage(file = robot.logo)
+        self.logo_image = robot.makeSize(robot.logo, True)
         self.logo_label = tk.Label(self.image_frame, image=self.logo_image)
         self.logo_label.pack()
         
@@ -151,7 +156,7 @@ class Robodex(tk.Frame):
         self.drive_label.pack(side="left")
         self.cFrame = tk.Frame(self.rightFrame.interior)
         self.cFrame.pack(pady=(10,10), anchor=tk.W)
-        self.template_chassy_label = tk.Label(self.cFrame, text=("Chassy Type:"),
+        self.template_chassy_label = tk.Label(self.cFrame, text=("Chassis Type:"),
                                      font=("courier", "15"), bg= '#7D4735', fg='#EEE3B9',
                                      relief=tk.RAISED)
         self.template_chassy_label.pack(side="left")
@@ -168,18 +173,17 @@ class Robodex(tk.Frame):
         self.mechs_list = []
         self.text_list = []
         self.keys = []
+        self.profile = []
+
+        self.indexed = 0
+        self.key_index = 0
         
         for key, value in inf[0].items():
                 self.keys.append(key)
-        self.key_index = 0
-        self.profile = []
-        p = 0
-        for thing in inf:
+                
+        for p in range(len(inf)):
             self.profile.append(p)
-            p += 1
             
-        self.indexed = 0
-        
         self.create_robot_info()
             
     def create_robot_info(self):
@@ -199,10 +203,12 @@ class Robodex(tk.Frame):
             self.text_list[robot.mechs.index(mech)] = tk.Text(self.rightFrame.interior, height=2, width=70,
                                      wrap=tk.WORD, font=("courier", "13"),
                                      bg="#7D4735", fg="#EEE3B9")
-            self.mechs_list[robot.mechs.index(mech)].pack(pady=(10, 0), anchor=tk.W)
-            self.text_list[robot.mechs.index(mech)].pack(padx=(45, 10))
+            self.mechs_list[robot.mechs.index(mech)].pack(pady=(10, 0),ipadx=5, anchor=tk.W)
+            self.text_list[robot.mechs.index(mech)].pack(padx=(45, 10), pady=(5, 10))
             self.text_list[robot.mechs.index(mech)].insert(tk.END, robot.mechD[robot.mechs.index(mech)])
             self.text_list[robot.mechs.index(mech)].config(state=tk.DISABLED)
+            
+        
 
     def key_change(self):
         if self.key_index > len(self.keys) - 1:
@@ -245,9 +251,12 @@ class Robodex(tk.Frame):
         for mech in robot.mechs:
             self.mechs_list[robot.mechs.index(mech)].pack_forget()
             self.text_list[robot.mechs.index(mech)].pack_forget()
+        #self.graph.pack_forget()
         robot.mechs = inf[index]['Mechs']
         robot.mechD = inf[index]['MechD']
         self.create_robot_info()
+        #self.graph = DisplayBar(self.rightFrame.interior, 20, inf[index]['gPerRound'])
+        #self.graph.pack(anchor=tk.W)
         robot.image = robot.makeSize(inf[index]['Image'])
         #robot.image = tk.PhotoImage(file=inf[index]['Image'])
         self.image_label['image'] = robot.image
