@@ -82,27 +82,32 @@ class Robodex(tk.Frame):
         self.top_right_Label = tk.Label(self.topFrame, text=": ",
                                         font=("courier", "13", "bold"),
                                         fg="#EEE3B9", bg= "gray")
-        #self.top_right_Label.pack(side='left')
         self.top_right_Label.grid(sticky=tk.W, row=0, column=3)
 
         self.search_entry = tk.Entry(self.topFrame, width=10)
-        #self.search_entry.pack(side='left')
         self.search_entry.grid(sticky=tk.W, row=0, column=4)
 
         self.search_button = tk.Button(self.topFrame, text="Search",
                                        command=lambda: self.search(self.key_button['text'], self.search_entry.get()))
-        #self.search_button.pack(side='left', padx=(5, 0))
         self.search_button.grid(sticky=tk.W, row=0, column=5)
-        
-        self.right_button = tk.Button(self.topFrame, text="->",
-                                      command=lambda: self.profile_change(1))
-        #self.right_button.pack(side='right')
-        self.right_button.grid(sticky=tk.W, row=0, column=6)
         
         self.left_button = tk.Button(self.topFrame, text="<-",
                                       command=lambda: self.profile_change(-1))
-        #self.left_button.pack(side='right')
-        self.left_button.grid(sticky=tk.W, row=0, column=7)
+        self.left_button.grid(sticky=tk.W, row=0, column=6)
+        
+        self.right_button = tk.Button(self.topFrame, text="->",
+                                      command=lambda: self.profile_change(1))
+        self.right_button.grid(sticky=tk.W, row=0, column=7)
+        
+        self.team_before_Label = tk.Label(self.topFrame, text="Teams found:",
+                                          font=("courier", "13", "bold"),
+                                          fg="#EEE3B9", bg= "gray")
+        self.team_before_Label.grid(sticky=tk.W, row=1, column=0, columnspan=2)
+        self.teams_found_Label = tk.Label(self.topFrame, text="Nothing",
+                                          font=("courier", "13", "bold"),
+                                          fg="#EEE3B9", bg= "gray")
+        
+
         
         #Creating frame for left side
         self.leftFrame = tk.Frame(self, bg='#957156', width=250, height=300)
@@ -181,11 +186,13 @@ class Robodex(tk.Frame):
         self.text_list = []
         self.keys = []
         self.profile = []
+        self.teams_found = []
         self.compare = ['=', '<', '>']
 
         self.indexed = 0
         self.key_index = 0
         self.compare_index = 0
+        self.key = ""
         self.isNum = False
 
         self.numCompare = tk.Button(self.topFrame, text="=",
@@ -226,9 +233,9 @@ class Robodex(tk.Frame):
         '''Makes the compare button's text index through [=,<,>].'''
         if self.compare_index > 2:
             self.compare_index = 0
-
         self.numCompare['text'] = self.compare[self.compare_index]
         self.compare_index += 1
+
 
 
     def key_change(self):
@@ -239,14 +246,12 @@ class Robodex(tk.Frame):
             self.isNum = True
         else:
             self.isNum = False
-
+            
         if self.isNum:
             self.numCompare.grid(column=2, row=0)
         else:
             self.numCompare.grid_forget()
 
-        #if self.isNum:
-        #    self.
         self.key_button['text'] = self.keys[self.key_index]
         self.key_index += 1
 
@@ -263,17 +268,38 @@ class Robodex(tk.Frame):
     def search(self, key, wanted):
         '''Checks through the keys in our dictionary to see if that key holds the wanted variable'''
         self.search_button['text'] = "Searching..."
+        self.key = key
         found = False
         result = []
-        for i in range(len(inf)):
-            if wanted in inf[i][key]:
-                found = True
-                result.append(i)
+        if self.isNum:
+            wanted = int(wanted)
+            if self.compare_index == 2:
+                for i in range(len(inf)):
+                    if wanted > int(inf[i][key]):
+                        found = True
+                        result.append(i)
+
+            elif self.compare_index == 3:
+                    for i in range(len(inf)):
+                        if wanted < int(inf[i][key]):
+                            found = True
+                            result.append(i)
+            else:
+                for i in range(len(inf)):
+                        if wanted == int(inf[i][key]):
+                            found = True
+                            result.append(i) 
+        else:
+            for i in range(len(inf)):
+                if wanted in inf[i][key]:
+                    found = True
+                    result.append(i)
 
         if found:
             self.search_button['text'] = "Found!"
             self.profile = result #Asign profile list to result
-            print(self.profile)
+            for index in self.profile:
+                self.teams_found.append(inf[index]['Team'])
             self.change_text(self.profile[0]) #Sets the text on screen to first item in profile list
         else:
             self.search_button['text'] = "Nothing Found"
@@ -302,6 +328,8 @@ class Robodex(tk.Frame):
         self.robotTeam_label['text'] = robot.team
         self.drive_label['text'] = robot.drive
         self.chassy_label['text'] = robot.chassy
+        self.teams_found_Label['text'] = self.teams_found
+        self.teams_found_Label.grid(sticky=tk.W, row=1, column=2, columnspan=10)
 
 root = tk.Tk()
 root.geometry()
