@@ -12,18 +12,18 @@ default_image = 'kachow.gif'
 inf = []
 with open('CSVTest.csv') as csvfile:
     reader = csv.DictReader(csvfile, delimiter='/')
-    for row in reader:
-        file = {'Team':row['Team'], 'Name':row['Name'], 'Drive':row['Drive'],
-                'Chassis':row['Chassis'], 'Mechs':row['Mechs'], 'MechD':row['MechD'],
-                'aGear':row['aGear'], 'aGearPos':row['aGearPos'], 'aPosStart':row['aPosStart'],
-                'aPosEnd':row['aPosEnd'], 'gPerRound':row['gPerRound'],
-                'fPerRound':row['fPerRound'], 'climb':row['climb'],
-                'Image':row['Image'], 'Logo':row['Logo']}
+    for column in reader:
+        file = {'Team':column['Team'], 'Name':column['Name'], 'Drive':column['Drive'],
+                'Chassis':column['Chassis'], 'Mechs':column['Mechs'], 'MechD':column['MechD'],
+                'Autonomous Gear':column['aGear'], 'Autonomous Gear Positon':column['aGearPos'],
+                'Autonomous Position Start':column['aPosStart'], 'Autonomous Position End':column['aPosEnd'],
+                'Gear Per Round':column['gPerRound'], 'Fuel Per Round Low':column['fPerRoundLo'],
+                'Fuel Per Round High':column['fPerRoundHi'], 'Climb':column['climb'], 'Image':column['Image'], 'Logo':column['Logo']}
         inf.append(file)
+        
     for rob in inf:
         rob['Mechs'] = rob['Mechs'].split(',')
         rob['MechD'] = rob['MechD'].split(',')
-        rob['fPerRound'] = rob['fPerRound'].split(',')
 
 class Robot():
     ''' Creates a data class meant to house the displayed infomation '''
@@ -31,6 +31,7 @@ class Robot():
                  image=default_image, logo=default_logo, mechs=["Key Searcher", "Indexer"],
                  mechD=["Button in top left will cycle through available keys to be used in search.",
                         "Arrow buttons in top right will cycle through the robots that satisfy search parameter."]):
+
         self.name = name
         self.team = team
         self.drive = drive
@@ -72,30 +73,36 @@ class Robodex(tk.Frame):
         self.top_left_Label= tk.Label(self.topFrame, text="Search ",
                                  font=("courier", "13", "bold"),
                                  fg="#EEE3B9", bg= "gray")
-        self.top_left_Label.pack(side='left')
+        self.top_left_Label.grid(sticky=tk.W, row=0, column=0)
 
         self.key_button = tk.Button(self.topFrame, text="Team",
                                     command=lambda: self.key_change())
-        self.key_button.pack(side='left')
+        self.key_button.grid(sticky=tk.W, row=0, column=1)
 
-        self.top_right_Label = tk.Label(self.topFrame, text=" Here: ",
+        self.top_right_Label = tk.Label(self.topFrame, text=": ",
                                         font=("courier", "13", "bold"),
                                         fg="#EEE3B9", bg= "gray")
-        self.top_right_Label.pack(side='left')
+        #self.top_right_Label.pack(side='left')
+        self.top_right_Label.grid(sticky=tk.W, row=0, column=3)
 
         self.search_entry = tk.Entry(self.topFrame, width=10)
-        self.search_entry.pack(side='left')
+        #self.search_entry.pack(side='left')
+        self.search_entry.grid(sticky=tk.W, row=0, column=4)
 
         self.search_button = tk.Button(self.topFrame, text="Search",
                                        command=lambda: self.search(self.key_button['text'], self.search_entry.get()))
-        self.search_button.pack(side='left', padx=(5, 0))
+        #self.search_button.pack(side='left', padx=(5, 0))
+        self.search_button.grid(sticky=tk.W, row=0, column=5)
         
         self.right_button = tk.Button(self.topFrame, text="->",
                                       command=lambda: self.profile_change(1))
-        self.right_button.pack(side='right')
+        #self.right_button.pack(side='right')
+        self.right_button.grid(sticky=tk.W, row=0, column=6)
+        
         self.left_button = tk.Button(self.topFrame, text="<-",
                                       command=lambda: self.profile_change(-1))
-        self.left_button.pack(side='right')
+        #self.left_button.pack(side='right')
+        self.left_button.grid(sticky=tk.W, row=0, column=7)
         
         #Creating frame for left side
         self.leftFrame = tk.Frame(self, bg='#957156', width=250, height=300)
@@ -174,9 +181,15 @@ class Robodex(tk.Frame):
         self.text_list = []
         self.keys = []
         self.profile = []
+        self.compare = ['=', '<', '>']
 
         self.indexed = 0
         self.key_index = 0
+        self.compare_index = 0
+        self.isNum = False
+
+        self.numCompare = tk.Button(self.topFrame, text="=",
+                               command=lambda: self.compare_change())
         
         for key, value in inf[0].items():
                 self.keys.append(key)
@@ -209,14 +222,36 @@ class Robodex(tk.Frame):
             self.text_list[robot.mechs.index(mech)].config(state=tk.DISABLED)
             
         
+    def compare_change(self):
+        '''Makes the compare button's text index through [=,<,>].'''
+        if self.compare_index > 2:
+            self.compare_index = 0
+
+        self.numCompare['text'] = self.compare[self.compare_index]
+        self.compare_index += 1
+
 
     def key_change(self):
+        '''Makes the key button's text index through all the keys in our dictionary.'''
         if self.key_index > len(self.keys) - 1:
             self.key_index = 0
+        if inf[0][self.keys[self.key_index]][0] in ['1','2','3','4','5','6','7','8','9','0']:
+            self.isNum = True
+        else:
+            self.isNum = False
+
+        if self.isNum:
+            self.numCompare.grid(column=2, row=0)
+        else:
+            self.numCompare.grid_forget()
+
+        #if self.isNum:
+        #    self.
         self.key_button['text'] = self.keys[self.key_index]
         self.key_index += 1
 
     def profile_change(self, value):
+        '''Index thorugh the profiles in self.profile list'''
         self.indexed += value #Fixed issue with not indexing to multiple data displays
         if self.indexed > len(self.profile) - 1:
             self.indexed = 0
@@ -226,6 +261,7 @@ class Robodex(tk.Frame):
         self.change_text(self.profile[self.indexed])
         
     def search(self, key, wanted):
+        '''Checks through the keys in our dictionary to see if that key holds the wanted variable'''
         self.search_button['text'] = "Searching..."
         found = False
         result = []

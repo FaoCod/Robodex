@@ -1,5 +1,5 @@
-Team/Name/Drive/Chassis/Image/Logo/Mechs/MechD/aGear/aGearPos/aPosStart/aPosEnd/gPerRound/fPerRound/climb
-1288/Raven Robotics/Mechanim Wheels/Tall/kachow.gif/ravenlogo.gif/Noodle,Cannon,Babies,Ladies,Boxes/Does noodle stuff,fires orphan babies,Its usless ammo \n\n,Does them all,They are boxes/True/Any/Any/True/8/40,80/True
-1315/Goobers/In-line wheels/Wide/kachow.jpg/ker.gif/Noodle,Cannon/Does noodle stuff,fires babies/False/Left/Left/True/3/60,32/True
-1619/Geeks/Rubber wheels/Short/kachow.jpg/ker.gif/Cannon/Fires babies/True/Sides/Right/False/1/120,0/False
-Dev/Development Team/Memes/Lightning McQueen/A&M.jpg/ker.gif/Noodle,Cannon/Does noodle stuff,fires babies/True/Center/Center/False/4/20,60/True
+Team/Name/Drive/Chassis/Image/Logo/Mechs/MechD/aGear/aGearPos/aPosStart/aPosEnd/gPerRound/fPerRoundHi/fPerRoundLo/climb
+1288/Raven Robotics/Mechanim Wheels/Tall/kachow.gif/ravenlogo.gif/Noodle,Cannon,Babies,Ladies,Boxes/Does noodle stuff,fires orphan babies,Its usless ammo \n\n,Does them all,They are boxes/True/Any/Any/True/8/40/80/True
+1315/Goobers/In-line wheels/Wide/kachow.jpg/ker.gif/Noodle,Cannon/Does noodle stuff,fires babies/False/Left/Left/True/3/60/32/True
+1619/Geeks/Rubber wheels/Short/kachow.jpg/ker.gif/Cannon/Fires babies/True/Sides/Right/False/1/120/0/False
+Dev/Development Team/Memes/Lightning McQueen/A&M.jpg/ker.gif/Noodle,Cannon/Does noodle stuff,fires babies/True/Center/Center/False/4/20/60/True
