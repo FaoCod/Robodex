@@ -1,6 +1,6 @@
 import tkinter as tk
-#from PIL import ImageTk
-#from PIL import Image
+from PIL import ImageTk
+from PIL import Image
 from ScrollFrame import VerticalScrolledFrame
 import csv
 from Bar import DisplayBar
@@ -26,11 +26,9 @@ with open('CSVTest.csv') as csvfile:
         rob['MechD'] = rob['MechD'].split(',')
         
 class RootApp(tk.Tk):
-
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
         '''Custom Window'''
-        
         self.columnconfigure(0, weight=1)
 
         # the container is where we'll stack a bunch of frames
@@ -76,26 +74,23 @@ class Robot():
         self.right_img = Image.open('left_frame_img.jpg')
         self.right_img = self.right_img.resize((800, 700), Image.ANTIALIAS)
         
-robot = Robot()
+
         
 
-    def (self, image, logo=False):
-        '''Remakes Image.jpg or any into an image that is 250x250 pixels'''
-        Do not take Portait photos with phone. Causes image to go sideways
+    def makeSize(self, image, logo=False):
+        '''Remakes Image.jpg or any into an image that is 250x250 pixels
+        Do not take Portait photos with phone. Causes image to go sideways'''
         image_file = Image.open(image)
         if logo:
             image_resized = image_file.resize((100, 100), Image.ANTIALIAS)
         else:
             image_resized = image_file.resize((250, 250), Image.ANTIALIAS)
-        return PhotoImage(image_resized)
+        return ImageTk.PhotoImage(image_resized)
 
 
 class CompareTwo(tk.Frame):
-    '''Displays descriptions of the three character creation methods'''
-
+    '''shows info on two different robots'''
     def __init__(self, parent, controller):
-        '''class constructor'''
-        
         tk.Frame.__init__(self, parent)
         self.controller = controller
         self.columnconfigure(0, weight=1)
@@ -103,12 +98,76 @@ class CompareTwo(tk.Frame):
 
     def create_widgets(self):
         '''method for widget placement'''
+        #Creating frame for top
+        self.topFrame = tk.Frame(self, height=30, bg='gray')
+        self.topFrame.grid(sticky=tk.W+tk.E)
+
+        self.top_left_label1 = tk.Label(self.topFrame, text="Search ",
+                                 font=("courier", "13", "bold"),
+                                 fg="#EEE3B9", bg= "gray")
+        self.top_left_label1.grid(sticky=tk.W, row=0, column=0, padx=(150, 0))
         
-        titleLbl = tk.Label(self, text="Compare Two Robots Here")
-        titleLbl.grid()
+        self.search_entry1 = tk.Entry(self.topFrame, width=10)
+        self.search_entry1.grid(sticky=tk.W, row=0, column=1, padx=(0, 10))
+        
+        self.search_button1 = tk.Button(self.topFrame, text="Search",
+                                       command=lambda: self.search(self.key_button['text'],
+                                                                   self.search_entry.get()))
+        self.search_button1.grid(sticky=tk.W, row=0, column=2, padx=(0, 20))
+        
+        titleLbl = tk.Label(self.topFrame, text="Two Robots Are Compared Here",
+                                 font=("courier", "13", "bold"),
+                                 fg="#EEE3B9", bg= "gray", relief=tk.RAISED)
+        titleLbl.grid(row=0, column=3)
+
+        self.top_left_label2 = tk.Label(self.topFrame, text="Search ",
+                                 font=("courier", "13", "bold"),
+                                 fg="#EEE3B9", bg= "gray")
+        self.top_left_label2.grid(sticky=tk.W, row=0, column=4, padx=(20,0))
+
+        self.search_entry2 = tk.Entry(self.topFrame, width=10)
+        self.search_entry2.grid(sticky=tk.W, row=0, column=5)
+
+        self.search_button2 = tk.Button(self.topFrame, text="Search",
+                                       command=lambda: self.search(self.key_button['text'],
+                                                                   self.search_entry.get()))
+        self.search_button2.grid(sticky=tk.W, row=0, column=6, padx=(10,0))
+        
         self.change_button_r = tk.Button(self, text="change",
                                        command=lambda: self.controller.show_frame("Robodex"))
         self.change_button_r.grid()
+        
+        #Creating bottom frame
+        self.botFrame = tk.Frame(self)
+        self.botFrame.grid()
+        
+        #Create left frame
+        self.leftCompareFrame = VerticalScrolledFrame(self.botFrame)
+        self.leftCompareFrame.pack(expand=True, fill=tk.BOTH, anchor=tk.E, side='left')
+        self.bg_left = ImageTk.PhotoImage(robot.right_img)
+        self.leftBg = tk.Label(self.leftCompareFrame.interior, image=self.bg_left)
+        self.leftBg.place(x=0, y=0, relwidth=1, relheight=1)
+
+        self.leftCompare = tk.Frame(self.leftCompareFrame.interior)
+        self.leftCompare.grid(row=0, column=0)
+        self.leftRobotName = tk.Label(self.leftCompare, text=("Left Robot"), font=("courier", "20"), bg='#7D4735', fg='#EEE3B9',relief=tk.RAISED)
+        self.leftRobotName.grid(ipadx=175)
+        self.leftRobotDrive = tk.Label(self.leftCompare, text=("Left Drive"), font=("courier", "15"), bg='#7D4735', fg='#EEE3B9',relief=tk.RAISED)
+        self.leftRobotDrive.grid(ipadx=175)
+
+        #Create right frame
+        self.rightCompareFrame = VerticalScrolledFrame(self.botFrame)
+        self.rightCompareFrame.pack(expand=True, fill=tk.BOTH, anchor=tk.E, side='left')
+        self.bg_right = ImageTk.PhotoImage(robot.right_img)
+        self.rightBg = tk.Label(self.rightCompareFrame.interior, image=self.bg_left)
+        self.rightBg.place(x=0, y=0, relwidth=1, relheight=1)
+
+        self.rightCompare = tk.Frame(self.rightCompareFrame.interior)
+        self.rightCompare.grid()
+        self.rightRobotName = tk.Label(self.rightCompare, text=("Right Robot"), font=("courier", "20"), bg='#7D4735', fg='#EEE3B9',relief=tk.RAISED)
+        self.rightRobotName.grid(ipadx=175)
+
+        
         
 class Robodex(tk.Frame):
     ''' Frame that shows the information about the robot searched for '''
@@ -120,7 +179,7 @@ class Robodex(tk.Frame):
         
 
     def create_widgets(self):
-        #Crating frame for top
+        #Creating frame for top
         self.topFrame = tk.Frame(self, height=30, bg='gray')
         self.topFrame.pack(fill='x')
         
@@ -143,7 +202,8 @@ class Robodex(tk.Frame):
         self.search_entry.grid(sticky=tk.W, row=0, column=4)
 
         self.search_button = tk.Button(self.topFrame, text="Search",
-                                       command=lambda: self.search(self.key_button['text'], self.search_entry.get()))
+                                       command=lambda: self.search(self.key_button['text'],
+                                                                   self.search_entry.get()))
         self.search_button.grid(sticky=tk.W, row=0, column=5)
         
         self.left_button = tk.Button(self.topFrame, text="<-",
@@ -163,7 +223,7 @@ class Robodex(tk.Frame):
                                           fg="#EEE3B9", bg= "gray")
 
         self.change_button = tk.Button(self.topFrame, text="change",
-                                       command=lambda: self.controller.show_frame("Help"))
+                                       command=lambda: self.controller.show_frame("CompareTwo"))
         self.change_button.grid(row=0, column=10)
         
 
@@ -210,8 +270,8 @@ class Robodex(tk.Frame):
         #Magical things happend in VerticalScrolledFrame - bless the coding gods
         self.rightFrame = VerticalScrolledFrame(self)
         self.rightFrame.pack(expand=True, fill=tk.BOTH, anchor=tk.E)
-        robot.right_img = ImageTk.PhotoImage(robot.right_img)
-        self.right_bg = tk.Label(self.rightFrame.interior, image=robot.right_img)
+        self.right_img = ImageTk.PhotoImage(robot.right_img)
+        self.right_bg = tk.Label(self.rightFrame.interior, image=self.right_img)
         self.right_bg.place(x=0, y=0, relwidth=1, relheight=1)
 
         #Creating widgets in right side frame - create first instance of info to describe Robodex
@@ -391,5 +451,5 @@ class Robodex(tk.Frame):
         self.teams_found_Label['text'] = self.teams_found
         self.teams_found_Label.grid(sticky=tk.W, row=1, column=2, columnspan=10)
 
+robot = Robot()
 root = RootApp()
-
