@@ -1,6 +1,6 @@
 import tkinter as tk
-from PIL import ImageTk
-from PIL import Image
+#from PIL import ImageTk
+#from PIL import Image
 from ScrollFrame import VerticalScrolledFrame
 import csv
 from Bar import DisplayBar
@@ -24,6 +24,39 @@ with open('CSVTest.csv') as csvfile:
     for rob in inf:
         rob['Mechs'] = rob['Mechs'].split(',')
         rob['MechD'] = rob['MechD'].split(',')
+        
+class RootApp(tk.Tk):
+
+    def __init__(self, *args, **kwargs):
+        tk.Tk.__init__(self, *args, **kwargs)
+        '''Custom Window'''
+        
+        self.columnconfigure(0, weight=1)
+
+        # the container is where we'll stack a bunch of frames
+        # on top of each other, then the one we want visible
+        # will be raised above the others
+
+        container = tk.Frame(self)
+        container.columnconfigure(0, weight=1)
+        container.grid(sticky = (tk.N+tk.S+tk.E+tk.W))
+        self.frames = {}
+        for F in (Robodex, CompareTwo):
+            page_name = F.__name__
+            frame = F(parent=container, controller=self) 
+            self.frames[page_name] = frame  
+
+            # put all of the pages in the same location;
+            # the one on the top of the stacking order
+            # will be the one that is visible.
+            frame.grid(row = 0,column=0, sticky = (tk.N+tk.S+tk.E+tk.W))
+
+        self.show_frame("Robodex")
+
+    def show_frame(self, page_name):
+        '''Show a frame for the given page name'''
+        frame = self.frames[page_name]
+        frame.tkraise()
 
 class Robot():
     ''' Creates a data class meant to house the displayed infomation '''
@@ -43,24 +76,46 @@ class Robot():
         self.right_img = Image.open('left_frame_img.jpg')
         self.right_img = self.right_img.resize((800, 700), Image.ANTIALIAS)
         
+robot = Robot()
+        
 
-    def makeSize(self, image, logo=False):
-        ''' Remakes Image.jpg or any into an image that is 250x250 pixels
-            Do not take Portait photos with phone. Causes image to go sideways'''
+    def (self, image, logo=False):
+        '''Remakes Image.jpg or any into an image that is 250x250 pixels'''
+        Do not take Portait photos with phone. Causes image to go sideways
         image_file = Image.open(image)
         if logo:
             image_resized = image_file.resize((100, 100), Image.ANTIALIAS)
         else:
             image_resized = image_file.resize((250, 250), Image.ANTIALIAS)
-        return ImageTk.PhotoImage(image_resized)
+        return PhotoImage(image_resized)
+
+
+class CompareTwo(tk.Frame):
+    '''Displays descriptions of the three character creation methods'''
+
+    def __init__(self, parent, controller):
+        '''class constructor'''
+        
+        tk.Frame.__init__(self, parent)
+        self.controller = controller
+        self.columnconfigure(0, weight=1)
+        self.create_widgets()
+
+    def create_widgets(self):
+        '''method for widget placement'''
+        
+        titleLbl = tk.Label(self, text="Compare Two Robots Here")
+        titleLbl.grid()
+        self.change_button_r = tk.Button(self, text="change",
+                                       command=lambda: self.controller.show_frame("Robodex"))
+        self.change_button_r.grid()
         
 class Robodex(tk.Frame):
     ''' Frame that shows the information about the robot searched for '''
-    def __init__(self, master=None):
-        tk.Frame.__init__(self, master)
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
         self.pack()
-        #self.master.geometry('1030x450')
-        self.master.title("Robodex")
+        self.controller = controller
         self.create_widgets()
         
 
@@ -106,6 +161,10 @@ class Robodex(tk.Frame):
         self.teams_found_Label = tk.Label(self.topFrame, text="Nothing",
                                           font=("courier", "13", "bold"),
                                           fg="#EEE3B9", bg= "gray")
+
+        self.change_button = tk.Button(self.topFrame, text="change",
+                                       command=lambda: self.controller.show_frame("Help"))
+        self.change_button.grid(row=0, column=10)
         
 
         
@@ -332,10 +391,5 @@ class Robodex(tk.Frame):
         self.teams_found_Label['text'] = self.teams_found
         self.teams_found_Label.grid(sticky=tk.W, row=1, column=2, columnspan=10)
 
-root = tk.Tk()
-root.geometry()
-robot = Robot()
-app = Robodex(master=root)
-app.pack()
-app.mainloop()
+root = RootApp()
 
