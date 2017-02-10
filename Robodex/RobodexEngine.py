@@ -298,6 +298,7 @@ class Robodex(tk.Frame):
         if found:
             self.search_button['text'] = "Found!"
             self.profile = result #Asign profile list to result
+            self.teams_found = []
             for index in self.profile:
                 self.teams_found.append(inf[index]['Team'])
             self.change_text(self.profile[0]) #Sets the text on screen to first item in profile list
@@ -314,15 +315,15 @@ class Robodex(tk.Frame):
             self.mechs_list[robot.mechs.index(mech)].pack_forget()
             self.text_list[robot.mechs.index(mech)].pack_forget()
         #self.graph.pack_forget()
+        self.teams_found_Label['text'] = ""
         robot.mechs = inf[index]['Mechs']
         robot.mechD = inf[index]['MechD']
         self.create_robot_info()
         #self.graph = DisplayBar(self.rightFrame.interior, 20, inf[index]['gPerRound'])
         #self.graph.pack(anchor=tk.W)
         robot.image = robot.makeSize(inf[index]['Image'])
-        #robot.image = tk.PhotoImage(file=inf[index]['Image'])
         self.image_label['image'] = robot.image
-        self.logo = tk.PhotoImage(file=inf[index]['Logo'])
+        self.logo = robot.makeSize(inf[index]['Logo'], logo=True)
         self.logo_label['image'] = self.logo
         self.robotName_label['text'] = robot.name
         self.robotTeam_label['text'] = robot.team
