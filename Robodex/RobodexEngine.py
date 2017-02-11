@@ -3,7 +3,7 @@ from PIL import ImageTk
 from PIL import Image
 from ScrollFrame import VerticalScrolledFrame
 import csv
-from Bar import DisplayBar
+from Histogram import *
 
 default_logo = 'first_logo.jpg'
 default_image = 'kachow.gif'
@@ -233,7 +233,7 @@ class Robodex(tk.Frame):
         self.leftFrame.pack(side='left', anchor=tk.NW)
 
         #Creating widgets in left side frame
-        self.image = tk.PhotoImage(file = default_image)
+        self.image = robot.makeSize(default_image)
         self.image_label = tk.Label(self.leftFrame, image = self.image, width=250, height=250)
         self.image_label.pack()
         
@@ -438,8 +438,8 @@ class Robodex(tk.Frame):
         robot.mechs = inf[index]['Mechs']
         robot.mechD = inf[index]['MechD']
         self.create_robot_info()
-        #self.graph = DisplayBar(self.rightFrame.interior, 20, inf[index]['gPerRound'])
-        #self.graph.pack(anchor=tk.W)
+        self.graph = Histogram(self.rightFrame.interior)
+        self.graph.pack(anchor=tk.W)
         robot.image = robot.makeSize(inf[index]['Image'])
         self.image_label['image'] = robot.image
         self.logo = robot.makeSize(inf[index]['Logo'], logo=True)
