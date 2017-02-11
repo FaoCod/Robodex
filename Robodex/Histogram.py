@@ -31,7 +31,7 @@ class Histogram(tk.Canvas):
     	
     	
 #Code below used for testing without robodex
-root = tk.Tk()
-canvas = Histogram(root)
-canvas.pack(anchor=tk.NW)
+#root = tk.Tk()
+#canvas = Histogram(root)
+#canvas.pack(anchor=tk.NW)
 

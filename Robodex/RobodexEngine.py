@@ -72,7 +72,7 @@ class Robot():
         self.image = image
         self.logo = logo
         self.right_img = Image.open('left_frame_img.jpg')
-        self.right_img = self.right_img.resize((800, 700), Image.ANTIALIAS)
+        self.right_img = self.right_img.resize((850, 1000), Image.ANTIALIAS)
         
 
         
@@ -347,6 +347,9 @@ class Robodex(tk.Frame):
             self.text_list[robot.mechs.index(mech)].insert(tk.END, robot.mechD[robot.mechs.index(mech)])
             self.text_list[robot.mechs.index(mech)].config(state=tk.DISABLED)
             
+        self.graph = Histogram(self.rightFrame.interior)
+        self.graph.pack(anchor=tk.W)
+            
         
     def compare_change(self):
         '''Makes the compare button's text index through [=,<,>].'''
@@ -433,12 +436,11 @@ class Robodex(tk.Frame):
         for mech in robot.mechs:
             self.mechs_list[robot.mechs.index(mech)].pack_forget()
             self.text_list[robot.mechs.index(mech)].pack_forget()
-        #self.graph.pack_forget()
+        self.graph.pack_forget()
         self.teams_found_Label['text'] = ""
         robot.mechs = inf[index]['Mechs']
         robot.mechD = inf[index]['MechD']
         self.create_robot_info()
-        self.graph = Histogram(self.rightFrame.interior)
         self.graph.pack(anchor=tk.W)
         robot.image = robot.makeSize(inf[index]['Image'])
         self.image_label['image'] = robot.image
