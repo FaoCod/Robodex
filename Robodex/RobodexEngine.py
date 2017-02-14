@@ -153,7 +153,11 @@ class CompareTwo(tk.Frame):
         self.leftRobotName = tk.Label(self.leftCompare, text=("Left Robot"), font=("courier", "20"), bg='#7D4735', fg='#EEE3B9',relief=tk.RAISED)
         self.leftRobotName.grid(ipadx=175)
         self.leftRobotDrive = tk.Label(self.leftCompare, text=("Left Drive"), font=("courier", "15"), bg='#7D4735', fg='#EEE3B9',relief=tk.RAISED)
-        self.leftRobotDrive.grid(ipadx=175)
+        self.leftRobotDrive.grid(sticky=tk.E+tk.W)
+        self.leftRobotChassis = tk.Label(self.leftCompare, text=("Left Chassis"), font=("courier", "15"), bg='#7D4735', fg='#EEE3B9',relief=tk.RAISED)
+        self.leftRobotChassis.grid(sticky=tk.E+tk.W)
+        self.leftRobotMechan = tk.Label(self.leftCompare, text=("Left Mechanisms"), font=("courier", "15"), bg='#7D4735', fg='#EEE3B9',relief=tk.RAISED)
+        self.leftRobotMechan.grid(sticky=tk.E+tk.W)
 
         #Create right frame
         self.rightCompareFrame = VerticalScrolledFrame(self.botFrame)
@@ -166,6 +170,12 @@ class CompareTwo(tk.Frame):
         self.rightCompare.grid()
         self.rightRobotName = tk.Label(self.rightCompare, text=("Right Robot"), font=("courier", "20"), bg='#7D4735', fg='#EEE3B9',relief=tk.RAISED)
         self.rightRobotName.grid(ipadx=175)
+        self.rightRobotDrive = tk.Label(self.rightCompare, text=("Right Drive"), font=("courier", "15"), bg='#7D4735', fg='#EEE3B9',relief=tk.RAISED)
+        self.rightRobotDrive.grid(sticky=tk.E+tk.W)
+        self.rightRobotChassis = tk.Label(self.rightCompare, text=("Right Chassis"), font=("courier", "15"), bg='#7D4735', fg='#EEE3B9',relief=tk.RAISED)
+        self.rightRobotChassis.grid(sticky=tk.E+tk.W)
+        self.rightRobotMechan = tk.Label(self.rightCompare, text=("Right Mechanisms"), font=("courier", "15"), bg='#7D4735', fg='#EEE3B9',relief=tk.RAISED)
+        self.rightRobotMechan.grid(sticky=tk.E+tk.W)
 
         
         
