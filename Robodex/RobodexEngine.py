@@ -4,6 +4,9 @@ from PIL import Image
 from ScrollFrame import VerticalScrolledFrame
 import csv
 from Histogram import *
+from Compiler import *
+
+sheetData = Compiler()
 
 default_logo = 'first_logo.jpg'
 default_image = 'kachow.gif'
@@ -17,14 +20,26 @@ with open('CSVTest.csv') as csvfile:
                 'Chassis':column['Chassis'], 'Mechs':column['Mechs'], 'MechD':column['MechD'],
                 'Autonomous Gear':column['aGear'], 'Autonomous Gear Positon':column['aGearPos'],
                 'Autonomous Position Start':column['aPosStart'], 'Autonomous Position End':column['aPosEnd'],
-                'Gear Per Round':column['gPerRound'], 'Fuel Per Round Low':column['fPerRoundLo'],
-                'Fuel Per Round High':column['fPerRoundHi'], 'Climb':column['climb'], 'Image':column['Image'], 'Logo':column['Logo']}
+                'Image':column['Image'], 'Logo':column['Logo'], 'aGearHist':None, 'tGearHist':None, 'presHist':None}
         inf.append(file)
         
     for rob in inf:
         rob['Mechs'] = rob['Mechs'].split(',')
         rob['MechD'] = rob['MechD'].split(',')
-        
+
+for rob in inf:
+    #print(rob['Team'])
+    for r in sheetData.r:
+        #print(r['Team'])
+        if str(r['Team']) == rob['Team']:
+            print(r)
+            rob['aGearHist'] = r['aG']
+            rob['tGearHist'] = r['gR']
+            rob['presHist'] = r['pR']
+            print(rob['aGearHist'])
+            print(rob['tGearHist'])
+            print(rob['aGearHist'])
+            
 class RootApp(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
@@ -234,7 +249,7 @@ class Robodex(tk.Frame):
         self.isNum = False
 
         self.numCompare = tk.Button(self.topFrame, text="=",
-                               command=lambda: self.compare_change())
+                                    command=lambda: self.compare_change())
         
         for key, value in inf[0].items():
                 self.keys.append(key)
@@ -243,6 +258,10 @@ class Robodex(tk.Frame):
             self.profile.append(p)
             
         self.create_robot_info()
+        self.teleGearGraph = Histogram(self.rightFrame.interior, title="Tele Gear Histogram")
+        self.presHist = Histogram(self.rightFrame.interior, title="Pressure Histogram")
+        self.teleGearGraph.pack(anchor=tk.W)
+        self.presHist.pack(anchor=tk.W)
             
     def create_robot_info(self):
         '''writes the information in the scrollable frame
@@ -256,18 +275,14 @@ class Robodex(tk.Frame):
             
         for mech in robot.mechs:
             self.mechs_list[self.mechs_list.index(mech)] = tk.Label(self.rightFrame.interior, text=mech,
-                                       bg="#7D4735", fg="#EEE3B9", font=("courier", "15"),
-                                                                    relief=tk.RAISED)
+                                       bg="#7D4735", fg="#EEE3B9", font=("courier", "15"), relief=tk.RAISED)
             self.text_list[robot.mechs.index(mech)] = tk.Text(self.rightFrame.interior, height=2, width=70,
-                                     wrap=tk.WORD, font=("courier", "13"),
-                                     bg="#7D4735", fg="#EEE3B9")
+                                     wrap=tk.WORD, font=("courier", "13"), bg="#7D4735", fg="#EEE3B9")
             self.mechs_list[robot.mechs.index(mech)].pack(pady=(10, 0),ipadx=5, anchor=tk.W)
             self.text_list[robot.mechs.index(mech)].pack(padx=(45, 10), pady=(5, 10))
             self.text_list[robot.mechs.index(mech)].insert(tk.END, robot.mechD[robot.mechs.index(mech)])
             self.text_list[robot.mechs.index(mech)].config(state=tk.DISABLED)
-            
-        self.graph = Histogram(self.rightFrame.interior)
-        self.graph.pack(anchor=tk.W)
+        
             
         
     def compare_change(self):
@@ -354,7 +369,8 @@ class Robodex(tk.Frame):
         for mech in robot.mechs:
             self.mechs_list[robot.mechs.index(mech)].pack_forget()
             self.text_list[robot.mechs.index(mech)].pack_forget()
-        self.graph.pack_forget()
+        self.teleGearGraph.pack_forget()
+        self.presHist.pack_forget()
         self.teams_found_Label['text'] = ""
 
         #Change robot class values
@@ -369,7 +385,10 @@ class Robodex(tk.Frame):
 
         #Create new robot info
         self.create_robot_info()
-        self.graph.pack(anchor=tk.W)
+        self.teleGearGraph = Histogram(self.rightFrame.interior, values=inf[index]['tGearHist'], title="Tele Gears Histogram")
+        self.presHist = Histogram(self.rightFrame.interior, title='Pressure Histogram', values=inf[index]['presHist'][0], buckets=inf[index]['presHist'][1])
+        self.teleGearGraph.pack(anchor=tk.W)
+        self.presHist.pack(anchor=tk.W)
         self.image_label['image'] = robot.image
         self.logo = robot.makeSize(inf[index]['Logo'], logo=True)
         self.logo_label['image'] = self.logo
